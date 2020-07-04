@@ -1,1 +1,1 @@
-export const baseUrl = 'http://<Your Computer\'s IP address>:3001/'
+export const baseUrl = 'http://bright-yak-33.serverless.social/'
