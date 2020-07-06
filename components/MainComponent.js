@@ -130,7 +130,7 @@ const ReservationNavigator = createStackNavigator({
 const FavoritesNavigator = createStackNavigator({
   Favorites: { screen: Favorites }
 }, {
-  navigationOptions: ({ navigation }) => ({
+  defaultNavigationOptions: ({ navigation }) => ({
     headerStyle: {
         backgroundColor: "#512DA8"
     },
