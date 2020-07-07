@@ -69,7 +69,7 @@ function RenderDish(props) {
     const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
         if ( dx < -200 )
             return true;
-        else
+        else if(dx > 200)
             return false;
     }
 
@@ -93,6 +93,9 @@ function RenderDish(props) {
                     ],
                     { cancelable: false }
                 );
+            else
+                props.toggleModal();
+
 
             return true;
         }
@@ -126,7 +129,7 @@ function RenderDish(props) {
                             name="pencil"
                             type="font-awesome"
                             color="#512DA8"
-                            onPress={props.onPressAddComment}
+                            onPress={()=> props.toggleModal()}
                         />
 
                     </View>
@@ -154,7 +157,7 @@ class Dishdetail extends Component {
             rating:'',
             Author: '',
             Comment: '',
-            showModal: 'false'
+            showModal: false
 
         }
     }
@@ -211,7 +214,7 @@ class Dishdetail extends Component {
                     <RenderDish dish={this.props.dishes.dishes[+dishId]}
                     favorite={this.props.favorites.some(el => el === dishId)}
                     onPress={() => this.markFavorite(dishId)} 
-                    onPressAddComment={() => this.toggleModal()}
+                    toggleModal = {this.toggleModal} 
                     />
                     <RenderComments comments={this.props.comments.comments.filter((comment) => comment.dishId === dishId)} />
                     <Modal
