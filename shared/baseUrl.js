@@ -1,1 +1,1 @@
-export const baseUrl = 'http://old-rat-67.serverless.social/'
+export const baseUrl = 'http://cold-mayfly-98.serverless.social/'
