@@ -4,6 +4,8 @@ import * as Animatable from "react-native-animatable";
 import DatePicker from "react-native-datepicker";
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
+import * as Calendar from 'expo-calendar';
+
 
 class Reservation extends Component {
   constructor(props) {
@@ -45,6 +47,7 @@ class Reservation extends Component {
                 {
                     text: "OK",
                     onPress: () => {
+                        this.addReservationToCalendar(this.state.date)
                         this.presentLocalNotification(this.state.guests)
                         this.resetForm()
                     },
@@ -62,6 +65,48 @@ class Reservation extends Component {
         showModal: false,
         });
     }
+
+    async obtainCalendarPermission() {
+        let permission = await Permissions.getAsync(Permissions.CALENDAR)
+        if (permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.CALENDAR)
+            if (permission.status !== 'granted') {
+                Alert.alert('Permission not granted to show notification.')
+            }
+        }
+        return permission
+    }
+
+    async obtainDefaultCalendarId() {
+        let calendar = null;
+        if (Platform.OS === 'ios') {
+            calendar = await Calendar.getDefaultCalendarAsync();
+        } else {
+            const calendars = await Calendar.getCalendarsAsync();
+            calendar = (calendars) ?
+                (calendars.find(cal => cal.isPrimary) || calendars[0])
+                : null;
+        }
+        return (calendar) ? calendar.id : null;
+    }
+
+    async addReservationToCalendar(date) {
+        await this.obtainCalendarPermission()
+        const calendarId = await this.obtainDefaultCalendarId()
+        const startDate = new Date(Date.parse(date))
+        const endDate = new Date(Date.parse(date) + (2 * 60 * 60 * 1000))
+        const newCalendarID = await Calendar.createEventAsync(
+            calendarId,
+            {
+                title: 'Con Fusion Table Reservation',
+                startDate: startDate,
+                endDate: endDate,
+                timeZone: 'Asia/Hong_Kong',
+                location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong'
+            }
+        )
+    }
+
 
     async obtainNotificationPermission() {
         let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
@@ -134,29 +179,26 @@ class Reservation extends Component {
             <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Date and Time</Text>
                 <DatePicker
-                    style={{ flex: 2, marginRight: 20 }}
+                    style={{width: 200}}
                     date={this.state.date}
-                    format=""
-                    mode="datetime"
-                    placeholder="select date and Time"
-                    minDate="2017-01-01"
+                    mode="date"
+                    placeholder="select date"
+                    format="YYYY-MM-DD"
+                    minDate="2020-06-30"
                     confirmBtnText="Confirm"
                     cancelBtnText="Cancel"
                     customStyles={{
                     dateIcon: {
-                        position: "absolute",
+                        position: 'absolute',
                         left: 0,
                         top: 4,
-                        marginLeft: 0,
+                        marginLeft: 0
                     },
                     dateInput: {
-                        marginLeft: 36,
-                    },
-                    
+                        marginLeft: 36
+                    }
                     }}
-                    onDateChange={(date) => {
-                    this.setState({ date: date });
-                    }}
+                    onDateChange={(date) => {this.setState({date: date})}}
                 />
             </View>
             <View style={styles.formRow}>
